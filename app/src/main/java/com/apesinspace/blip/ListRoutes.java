@@ -3,12 +3,24 @@ package com.apesinspace.blip;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +49,47 @@ public class ListRoutes extends AppCompatActivity {
                 //intent.putExtra(EXTRA_ROUTE_ID,id);
                 startActivity(intent);
 
+            }
+        });
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody formBody = new MultipartBuilder()
+                .type(MultipartBuilder.FORM)
+                .addFormDataPart("username", "tet")
+                .addFormDataPart("pass", "test")
+                .addFormDataPart("Test", "test")//Will leave for now, but should either make a constant or some kind of user input
+                .build();
+        Request request = new Request.Builder()
+                .url("http://node.jrdbnntt.com/api/save_route")
+                .post(formBody)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                Log.e("TEST", e.getMessage());
+                //Todo:Create alert dialog that notifies user what happend
+            }
+            @Override
+            public void onResponse(Response response) throws IOException {
+                try {
+                    //Todo: check to see if authenticated if so start next activity else show error
+                    if (response.isSuccessful()) {
+                        //process response
+                        final JSONObject jsonResponse = new JSONObject(response.body().string());
+                        //runOnUiThread(new Runnable() {
+                           // @Override
+                          //  public void run() {
+                            //    Authenticate(jsonResponse);
+                        //    }
+                       // });
+                    }else{
+                        // TODO: Show response error to user
+                    }
+                }catch (Exception e){
+                    //TODO: Show error to user
+                    Log.e("TST", e.getMessage());
+                }
             }
         });
     }

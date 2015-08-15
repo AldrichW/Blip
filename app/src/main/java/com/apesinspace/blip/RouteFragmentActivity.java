@@ -19,6 +19,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -31,6 +32,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class RouteFragmentActivity extends FragmentActivity implements OnMapReadyCallback{
 
@@ -137,12 +140,15 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
             super.onPostExecute(result);
 
             try {
+                List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String,String>>>() ;
                 JSONObject json = new JSONObject(result);
                 String status = json.getString("status");
                 JSONArray routesArray = json.getJSONArray("routes");
                 JSONObject route = routesArray.getJSONObject(0);
                 JSONArray legsArray = route.getJSONArray("legs");
-                ArrayList<LatLng> points = new ArrayList<LatLng>();
+
+                List path = new ArrayList<HashMap<String, String>>();
+
                 for(int i = 0; i < legsArray.length(); i++){
                     JSONObject leg = legsArray.getJSONObject(i);
                     JSONArray stepsArray = leg.getJSONArray("steps");
@@ -155,29 +161,98 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
                     int padding = 100; // offset from edges of the map in pixels
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
                     googleMap.animateCamera(cu);
+                    ArrayList<LatLng> points = new ArrayList<LatLng>();
                     for (int j = 0; j < stepsArray.length(); j++){
-                        JSONObject step = stepsArray.getJSONObject(j);
-                        JSONObject startLocation = leg.getJSONObject("start_location");
-                        LatLng newStartPoint = new LatLng(startLocation.getDouble("lat"), startLocation.getDouble("lng"));
-                        JSONObject endLocation = leg.getJSONObject("end_location");
-                        LatLng newEndPoint = new LatLng(endLocation.getDouble("lat"), endLocation.getDouble("lng"));
-                        points.add(newStartPoint);
-                        points.add(newEndPoint);
+                        String polyline = "";
+                        polyline = (String)((JSONObject)((JSONObject)stepsArray.get(j)).get("polyline")).get("points");
+                        List<LatLng> list = decodePoly(polyline);
 
+                        /** Traversing all points */
+                        for(int l=0;l<list.size();l++){
+                            HashMap<String, String> hm = new HashMap<String, String>();
+                            hm.put("lat", Double.toString(((LatLng)list.get(l)).latitude) );
+                            hm.put("lng", Double.toString(((LatLng)list.get(l)).longitude) );
+                            path.add(hm);
+                        }
                     }
                     Polyline line = googleMap.addPolyline(new PolylineOptions()
                             .addAll(points)
                             .width(5)
                             .color(Color.BLUE));
+
+                    routes.add(path);
+
+                    ArrayList<LatLng> pointsTwo = null;
+                    PolylineOptions lineOptions = null;
+                    MarkerOptions markerOptions = new MarkerOptions();
+
+                    // Traversing through all the routes
+                    for(int k=0;k<routes.size();k++){
+                        points = new ArrayList<LatLng>();
+                        lineOptions = new PolylineOptions();
+
+                        // Fetching i-th route
+                        List<HashMap<String, String>> paths = routes.get(k);
+
+                        // Fetching all the points in i-th route
+                        for(int l=0;l<path.size();l++){
+                            HashMap<String,String> point = paths.get(l);
+
+                            double lat = Double.parseDouble(point.get("lat"));
+                            double lng = Double.parseDouble(point.get("lng"));
+                            LatLng position = new LatLng(lat, lng);
+
+                            points.add(position);
+                        }
+
+                        // Adding all the points in the route to LineOptions
+                        lineOptions.addAll(points);
+                        lineOptions.width(5);
+                        lineOptions.color(Color.BLUE);
+                    }
+
+                    // Drawing polyline in the Google Map for the i-th route
+                    googleMap.addPolyline(lineOptions);
                 }
-                System.out.println(status);
-
-
             }
             catch(Exception e){
                 System.out.println("Exception thrown when creating json object." + e.getMessage());
             }
 
+        }
+
+        private List<LatLng> decodePoly(String encoded) {
+
+            List<LatLng> poly = new ArrayList<LatLng>();
+            int index = 0, len = encoded.length();
+            int lat = 0, lng = 0;
+
+            while (index < len) {
+                int b, shift = 0, result = 0;
+                do {
+                    b = encoded.charAt(index++) - 63;
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+                int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+                lat += dlat;
+
+                shift = 0;
+                result = 0;
+                do {
+                    b = encoded.charAt(index++) - 63;
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+                int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+                lng += dlng;
+
+                LatLng p = new LatLng((((double) lat / 1E5)),
+                        (((double) lng / 1E5)));
+                poly.add(p);
+            }
+
+            return poly;
         }
 
     }

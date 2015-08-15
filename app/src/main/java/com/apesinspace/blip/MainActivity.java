@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.squareup.okhttp.OkHttpClient;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected ImageView mRouteImageView;
     private ShareActionProvider mShareActionProvider;
     protected Intent mShareIntent;
+    protected OkHttpClient mClient;
 
 
     @Override

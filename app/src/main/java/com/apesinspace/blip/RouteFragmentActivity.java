@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -76,6 +78,19 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
         settings.setCompassEnabled(true);
         settings.setScrollGesturesEnabled(true);
         settings.setZoomGesturesEnabled(true);
+
+        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View contentView = getLayoutInflater().inflate(R.layout.info_contents, null);
+                return contentView;
+            }
+        });
 
     }
 

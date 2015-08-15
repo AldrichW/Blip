@@ -48,7 +48,6 @@ public class ListRoutes extends AppCompatActivity {
                 //String id = mRoutes.get(position).getId();
                 //intent.putExtra(EXTRA_ROUTE_ID,id);
                 startActivity(intent);
-
             }
         });
         OkHttpClient client = new OkHttpClient();

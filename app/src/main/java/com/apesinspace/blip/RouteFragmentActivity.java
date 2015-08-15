@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,6 +44,10 @@ import java.util.List;
 public class RouteFragmentActivity extends FragmentActivity implements OnMapReadyCallback{
 
     GoogleMap googleMap;
+    protected View contentView;
+
+    protected TextView infoTitle;
+    HashMap<Marker, MarkerInfo>  markerMap;
 
     public enum MarkerType {
         SCENIC_POINT,
@@ -59,11 +64,7 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if(networkInfo != null && networkInfo.isConnected()){
-            getDirectionBetweenTwoPlaces("Toronto", "Montreal");
-        }
+        markerMap = new HashMap<Marker, MarkerInfo>();
 
     }
 
@@ -72,6 +73,13 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
         googleMap = map;
         map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo != null && networkInfo.isConnected()){
+            getDirectionBetweenTwoPlaces("Toronto", "Montreal");
+        }
+
         UiSettings settings = map.getUiSettings();
         //Let's enable the zoom control and compass control on the app.
         settings.setZoomControlsEnabled(true);
@@ -79,18 +87,32 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
         settings.setScrollGesturesEnabled(true);
         settings.setZoomGesturesEnabled(true);
 
-        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
+            public boolean onMarkerClick(Marker marker) {
 
-            @Override
-            public View getInfoContents(Marker marker) {
-                View contentView = getLayoutInflater().inflate(R.layout.info_contents, null);
-                return contentView;
+                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                    @Override
+                    public View getInfoWindow(Marker marker) {
+                        return null;
+                    }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        View contentView = getLayoutInflater().inflate(R.layout.info_contents, null);
+                        MarkerInfo info = markerMap.get(marker);
+                        TextView infoTitle = (TextView)contentView.findViewById(R.id.info_title);
+                        infoTitle.setText(info.getInfoTitle());
+                        TextView infoText = (TextView)contentView.findViewById(R.id.info_text);
+                        infoText.setText(info.getInfoText());
+
+                        return contentView;
+                    }
+                });
+                return false;
             }
         });
+
 
     }
 
@@ -116,29 +138,44 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
         return super.onOptionsItemSelected(item);
     }
 
-    public void addMarker(LatLng point, MarkerType markerType){
-        if (MarkerType.SCENIC_POINT == markerType){
-            //MAke Marker purple
-            Marker newMarker = googleMap.addMarker(new MarkerOptions()
-                                                   .position(point)
-                                                   .title("Scenic Point")
-                                                   .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+    public void addMarker(final LatLng point, final MarkerType markerType, final String infoTitle, final String infoText){
 
+
+        if (MarkerType.SCENIC_POINT == markerType){
+            //Make Marker purple
+            Marker newMarker = googleMap.addMarker(new MarkerOptions()
+                    .position(point)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+
+            MarkerInfo markerInfo = new MarkerInfo();
+            markerInfo.setInfoTitle(infoTitle);
+            markerInfo.setInfoText(infoText);
+            markerMap.put(newMarker, markerInfo);
 
         }
         else if(MarkerType.CAUTION_POINT == markerType){
             //Make marker red
             Marker newMarker = googleMap.addMarker(new MarkerOptions()
                     .position(point)
-                    .title("Caution Point")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+            MarkerInfo markerInfo = new MarkerInfo();
+            markerInfo.setInfoTitle(infoTitle);
+            markerInfo.setInfoText(infoText);
+            markerMap.put(newMarker, markerInfo);
+
         }
         else if(MarkerType.POINT_OF_INTEREST == markerType){
-            //make marker yellow
+            //Make marker yellow
             Marker newMarker = googleMap.addMarker(new MarkerOptions()
                     .position(point)
-                    .title("Point Of Interest")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+
+            MarkerInfo markerInfo = new MarkerInfo();
+            markerInfo.setInfoTitle(infoTitle);
+            markerInfo.setInfoText(infoText);
+            markerMap.put(newMarker, markerInfo);
+
         }
     }
 
@@ -352,13 +389,13 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
                     if(j == 36){
-                        addMarker(position, MarkerType.SCENIC_POINT);
+                        addMarker(position, MarkerType.SCENIC_POINT,"Scenic Viewpoint", "Wow, such a nice view!");
                     }
                     if(j == 100){
-                        addMarker(position, MarkerType.CAUTION_POINT);
+                        addMarker(position, MarkerType.CAUTION_POINT, "Take Caution!", "Be careful! The roads get really slippery here.");
                     }
                     if(j == 300){
-                        addMarker(position, MarkerType.POINT_OF_INTEREST);
+                        addMarker(position, MarkerType.POINT_OF_INTEREST, "Point of Interest", "Nice little bike shop nearby.");
                     }
 
                     points.add(position);

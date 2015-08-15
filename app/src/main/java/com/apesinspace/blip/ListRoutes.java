@@ -12,12 +12,15 @@ import android.widget.ListView;
 
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -28,6 +31,7 @@ public class ListRoutes extends AppCompatActivity {
 
 
     private static final String EXTRA_ROUTE_ID = "com.example.EXTRA_ROUTE_ID";
+    public static final String TAG = ListRoutes.class.getSimpleName();
     protected List<Routes> mRoutes;
     protected ListView mRouteList;
 
@@ -35,6 +39,9 @@ public class ListRoutes extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_routes);
+        if(!BlipApplication.getLoggedIn()){
+            navigateToLogin();
+        }
         mRoutes = new ArrayList<>();
         mRoutes.add(new Routes("this"));
         mRoutes.add(new Routes("is"));
@@ -50,47 +57,61 @@ public class ListRoutes extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        OkHttpClient client = new OkHttpClient();
+//        OkHttpClient client = new OkHttpClient();
+//        RequestBody body = RequestBody.create(JSON,"{\n" +
+//                "   \"data\": \"Test\",\n" +
+//                "   \"bool\": true\n" +
+//                "}");
+//        Request request = new Request.Builder()
+//                .url("http://node.jrdbnntt.com/resources/test")
+//                .post(body)
+//                .build();
+//        Call call = client.newCall(request);
+//        call.enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Request request, IOException e) {
+//                Log.e(TAG, e.getMessage());
+//                //Todo:Create alert dialog that notifies user what happend
+//            }
+//            @Override
+//            public void onResponse(Response response) throws IOException {
+//                try {
+//                    //Todo: check to see if authenticated if so start next activity else show error
+//                    if (response.isSuccessful()) {
+//                        //process response
+//                        final JSONObject jsonResponse = new JSONObject(response.body().string());
+//                        Log.d(TAG,jsonResponse.toString());
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                //getRoutes(jsonResponse);
+//                            }
+//                        });
+//                    }else{
+//                        // TODO: Show response error to user
+//                    }
+//                }catch (Exception e){
+//                    //TODO: Show error to user
+//                    Log.e("TAG", e.getMessage());
+//                }
+//            }
+//        });
+    }
 
-        RequestBody formBody = new MultipartBuilder()
-                .type(MultipartBuilder.FORM)
-                .addFormDataPart("username", "tet")
-                .addFormDataPart("pass", "test")
-                .addFormDataPart("Test", "test")//Will leave for now, but should either make a constant or some kind of user input
-                .build();
-        Request request = new Request.Builder()
-                .url("http://node.jrdbnntt.com/api/save_route")
-                .post(formBody)
-                .build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                Log.e("TEST", e.getMessage());
-                //Todo:Create alert dialog that notifies user what happend
-            }
-            @Override
-            public void onResponse(Response response) throws IOException {
-                try {
-                    //Todo: check to see if authenticated if so start next activity else show error
-                    if (response.isSuccessful()) {
-                        //process response
-                        final JSONObject jsonResponse = new JSONObject(response.body().string());
-                        //runOnUiThread(new Runnable() {
-                           // @Override
-                          //  public void run() {
-                            //    Authenticate(jsonResponse);
-                        //    }
-                       // });
-                    }else{
-                        // TODO: Show response error to user
-                    }
-                }catch (Exception e){
-                    //TODO: Show error to user
-                    Log.e("TST", e.getMessage());
+    private void getRoutes(JSONObject jsonResponse) {
+        if(jsonResponse == null){
+            //todo:show error
+        }else {
+            try{
+                JSONArray jsonRoutes = jsonResponse.getJSONArray("routes");
+                for(int i = 0; i < jsonRoutes.length(); i++){
+                    mRoutes.add(new Routes(jsonRoutes.getJSONObject(i).getString("route")));
                 }
+            }catch (JSONException e){
+                Log.e(TAG,e.getMessage());
             }
-        });
+        }
+
     }
 
     @Override
@@ -124,4 +145,15 @@ public class ListRoutes extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+
+    private void navigateToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
 }

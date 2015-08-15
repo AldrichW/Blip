@@ -42,9 +42,8 @@ public class RouteAdapter extends ArrayAdapter<Routes> {
         }
 
         Routes route = mRoutes.get(position);
-
+        holder.routeImageView.setImageResource(R.drawable.test);
         holder.routeLabel.setText(route.getName());
-
         holder.routeRating.setNumStars(3);
 
         return convertView;

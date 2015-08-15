@@ -17,8 +17,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -39,6 +41,12 @@ import java.util.List;
 public class RouteFragmentActivity extends FragmentActivity implements OnMapReadyCallback{
 
     GoogleMap googleMap;
+
+    public enum MarkerType {
+        SCENIC_POINT,
+        CAUTION_POINT,
+        POINT_OF_INTEREST
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +99,32 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void addMarker(LatLng point, MarkerType markerType){
+        if (MarkerType.SCENIC_POINT == markerType){
+            //MAke Marker purple
+            Marker newMarker = googleMap.addMarker(new MarkerOptions()
+                                                   .position(point)
+                                                   .title("Scenic Point")
+                                                   .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+
+
+        }
+        else if(MarkerType.CAUTION_POINT == markerType){
+            //Make marker red
+            Marker newMarker = googleMap.addMarker(new MarkerOptions()
+                    .position(point)
+                    .title("Caution Point")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        }
+        else if(MarkerType.POINT_OF_INTEREST == markerType){
+            //make marker yellow
+            Marker newMarker = googleMap.addMarker(new MarkerOptions()
+                    .position(point)
+                    .title("Point Of Interest")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+        }
     }
 
     public class DirectionsJSONParser {
@@ -302,14 +336,23 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
+                    if(j == 36){
+                        addMarker(position, MarkerType.SCENIC_POINT);
+                    }
+                    if(j == 100){
+                        addMarker(position, MarkerType.CAUTION_POINT);
+                    }
+                    if(j == 300){
+                        addMarker(position, MarkerType.POINT_OF_INTEREST);
+                    }
 
                     points.add(position);
                 }
 
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
-                lineOptions.width(2);
-                lineOptions.color(Color.RED);
+                lineOptions.width(4);
+                lineOptions.color(Color.BLUE);
             }
 
             // Drawing polyline in the Google Map for the i-th route

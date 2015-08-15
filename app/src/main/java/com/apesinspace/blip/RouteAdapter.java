@@ -1,6 +1,8 @@
 package com.apesinspace.blip;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +46,7 @@ public class RouteAdapter extends ArrayAdapter<Routes> {
         holder.routeLabel.setText(route.getName());
 
         holder.routeRating.setNumStars(3);
+
         return convertView;
     }
 

@@ -1,9 +1,12 @@
 package com.apesinspace.blip;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected ListView mUserListView;
     protected List<User> mUsers;
+    protected ImageView mRouteImageView;
 
 
     @Override
@@ -20,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mUserListView = (ListView) findViewById(R.id.listView);
+        mRouteImageView = (ImageView) findViewById(R.id.imageView);
         mUsers = new ArrayList<>();
         mUsers.add(new User("Sam","This is a review blalb"));
         mUsers.add(new User("Sam","This is a review blalb"));
@@ -28,6 +33,13 @@ public class MainActivity extends AppCompatActivity {
         mUsers.add(new User("Sam","This is a review blalb"));
         mUsers.add(new User("Sam","This is a review blalb"));
 
+        mRouteImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent =  new Intent(MainActivity.this, RouteFragmentActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

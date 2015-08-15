@@ -11,11 +11,15 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
@@ -35,16 +39,17 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if(networkInfo != null && networkInfo.isConnected()){
-            getDirectionBetweenTwoPlaces("Toronto", "Montreal");
-        }
 
         setContentView(R.layout.activity_route_fragment);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo != null && networkInfo.isConnected()){
+            getDirectionBetweenTwoPlaces("Toronto", "Montreal");
+        }
 
     }
 
@@ -87,7 +92,8 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
 
     public void getDirectionBetweenTwoPlaces(String startingPlace, String endingPlace) {
         String urlString = "https://maps.googleapis.com/maps/api/directions/json?origin=" + startingPlace +
-                "&destination=" + endingPlace + "&key=AIzaSyDjE7vD3WVTTZ1aabGmZBLj9XB5hlqHbZw";
+                "&destination=" + endingPlace + "&key=\n" +
+                "AIzaSyC8w2HRhc3uLwG7b2gIQroRHUYtkyljgSI";
 
         DownloadHandler downloadHandler = new DownloadHandler();
         downloadHandler.execute(urlString);
@@ -133,29 +139,44 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
             try {
                 JSONObject json = new JSONObject(result);
                 String status = json.getString("status");
-                JSONArray jsonArray = json.getJSONArray("routes");
-                JSONArray legsArray = jsonArray.getJSONArray(0);
+                JSONArray routesArray = json.getJSONArray("routes");
+                JSONObject route = routesArray.getJSONObject(0);
+                JSONArray legsArray = route.getJSONArray("legs");
                 ArrayList<LatLng> points = new ArrayList<LatLng>();
                 for(int i = 0; i < legsArray.length(); i++){
-                    JSONObject latLngJson = legsArray.getJSONObject(i);
-                    LatLng newPoint = new LatLng(latLngJson.getDouble("lat"), latLngJson.getDouble("long"));
-                    points.add(newPoint);
+                    JSONObject leg = legsArray.getJSONObject(i);
+                    JSONArray stepsArray = leg.getJSONArray("steps");
+                    JSONObject routeStartLocation = leg.getJSONObject("start_location");
+                    LatLng routeStartPoint = new LatLng(routeStartLocation.getDouble("lat"), routeStartLocation.getDouble("lng"));
+                    JSONObject routeEndLocation = leg.getJSONObject("end_location");
+                    LatLng routeEndPoint = new LatLng(routeEndLocation.getDouble("lat"), routeEndLocation.getDouble("lng"));
+
+                    LatLngBounds bounds = new LatLngBounds(routeStartPoint, routeEndPoint);
+                    int padding = 100; // offset from edges of the map in pixels
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                    googleMap.animateCamera(cu);
+                    for (int j = 0; j < stepsArray.length(); j++){
+                        JSONObject step = stepsArray.getJSONObject(j);
+                        JSONObject startLocation = leg.getJSONObject("start_location");
+                        LatLng newStartPoint = new LatLng(startLocation.getDouble("lat"), startLocation.getDouble("lng"));
+                        JSONObject endLocation = leg.getJSONObject("end_location");
+                        LatLng newEndPoint = new LatLng(endLocation.getDouble("lat"), endLocation.getDouble("lng"));
+                        points.add(newStartPoint);
+                        points.add(newEndPoint);
+
+                    }
+                    Polyline line = googleMap.addPolyline(new PolylineOptions()
+                            .addAll(points)
+                            .width(5)
+                            .color(Color.BLUE));
                 }
                 System.out.println(status);
 
-                PolylineOptions polyLineOptions = new PolylineOptions();
-                polyLineOptions.addAll(points);
-                polyLineOptions.width(2);
-                polyLineOptions.color(Color.BLUE);
-
-                googleMap.addPolyline(polyLineOptions);
 
             }
             catch(Exception e){
                 System.out.println("Exception thrown when creating json object." + e.getMessage());
             }
-
-
 
         }
 

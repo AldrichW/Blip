@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListRoutes extends AppCompatActivity {
+
+
+    private static final String EXTRA_ROUTE_ID = "com.example.EXTRA_ROUTE_ID";
     protected List<Routes> mRoutes;
     protected ListView mRouteList;
 
@@ -29,6 +32,9 @@ public class ListRoutes extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(ListRoutes.this,MainActivity.class);
+                //get id of the route that was clicked on
+                //String id = mRoutes.get(position).getId();
+                //intent.putExtra(EXTRA_ROUTE_ID,id);
                 startActivity(intent);
 
             }
@@ -38,6 +44,8 @@ public class ListRoutes extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //do a http request to grab Routes
+        //getRoutes();
         RouteAdapter adapter = new RouteAdapter(ListRoutes.this,mRoutes);
         mRouteList.setAdapter(adapter);
     }

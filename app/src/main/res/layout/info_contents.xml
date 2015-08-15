@@ -8,7 +8,8 @@
         android:layout_height="wrap_content"
         android:textSize="10pt"
         android:text="Scenic Viewpoint"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        android:id="@+id/info_title"/>
     <ImageView
         android:layout_width="130dp"
         android:layout_height="80dp"

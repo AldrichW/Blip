@@ -1,14 +1,19 @@
 package com.apesinspace.blip;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.internal.view.SupportMenuItem;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     protected ListView mUserListView;
     protected List<User> mUsers;
     protected ImageView mRouteImageView;
+    private ShareActionProvider mShareActionProvider;
+    protected Intent mShareIntent;
 
 
     @Override
@@ -26,17 +33,22 @@ public class MainActivity extends AppCompatActivity {
         mUserListView = (ListView) findViewById(R.id.listView);
         mRouteImageView = (ImageView) findViewById(R.id.imageView);
         mUsers = new ArrayList<>();
+        mShareIntent = new Intent();
+        mShareIntent.setAction(Intent.ACTION_SEND);
+        mShareIntent.setType("text/plain");
+        mShareIntent.putExtra(Intent.EXTRA_TEXT, "From me to you, this text is new.");
+
         mUsers.add(new User("Sam","This is a review blalb"));
-        mUsers.add(new User("Sam","This is a review blalb"));
-        mUsers.add(new User("Sam","This is a review blalb"));
-        mUsers.add(new User("Sam","This is a review blalb"));
-        mUsers.add(new User("Sam","This is a review blalb"));
-        mUsers.add(new User("Sam","This is a review blalb"));
+        mUsers.add(new User("Sam", "This is a review blalb"));
+        mUsers.add(new User("Sam", "This is a review blalb"));
+        mUsers.add(new User("Sam", "This is a review blalb"));
+        mUsers.add(new User("Sam", "This is a review blalb"));
+        mUsers.add(new User("Sam", "This is a review blalb"));
 
         mRouteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent =  new Intent(MainActivity.this, RouteFragmentActivity.class);
+                Intent intent = new Intent(MainActivity.this, RouteFragmentActivity.class);
                 startActivity(intent);
             }
         });
@@ -51,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             mUserListView.setAdapter(adapter);
         //}else{
             //refill
-          //  ((MessageAdapter)getListView().getAdapter()).refill(mMessages);
+          //  ((UserAdapter)mUserListView.getAdapter()).refill(mUsers);
         //}
 
     }
@@ -60,8 +72,17 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem item = menu.findItem(R.id.menu_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(mShareIntent);
+        }
+
+
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

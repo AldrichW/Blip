@@ -46,9 +46,9 @@ public class UserAdapter extends ArrayAdapter<User> {
         return convertView;
     }
 
-    public void refill(List<User> messages){
+    public void refill(List<User> users){
         mMessages.clear();
-        mMessages.addAll(messages);
+        mMessages.addAll(users);
         notifyDataSetChanged();
     }
 

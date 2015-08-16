@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.example.samnwosu.rabbit.ui.LoginActivity"
+                android:background="#303f9f">
+
+    <TextView
+        android:id="@+id/subTitle"
+        style="@style/AuthSubTitle"/>
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/AuthTitle"/>
+    <LinearLayout
+        android:id="@+id/edittextlayout"
+        style="@style/AuthFieldContainer">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="#bbbbbb"
+            android:id="@+id/emailField"
+            android:inputType="textEmailAddress"
+            android:hint="Email"
+            android:ems="10"
+            android:textSize="17sp"
+            />
+        <requestFocus/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="#bbbbbb"
+            android:inputType="textPassword"
+            android:textSize="17sp"
+            android:ems="10"
+            android:id="@+id/passwordField"
+            android:hint="Password"
+            />
+
+    </LinearLayout>
+
+
+
+    <Button
+        android:text="Login"
+        android:id="@+id/loginButton"
+        android:layout_below="@id/edittextlayout"
+        style="@style/AuthButton"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New? SignUp!"
+        android:id="@+id/signupText"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/loginButton"
+        android:layout_marginTop="12dp"
+        android:textColor="@android:color/white"
+
+        />
+
+
+
+
+</RelativeLayout>
+

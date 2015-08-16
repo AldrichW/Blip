@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#303f9f"
+                >
+
+    <TextView
+        android:id="@+id/subTitle"
+        style="@style/AuthSubTitle"/>
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/AuthTitle"/>
+    <LinearLayout
+        android:id="@+id/edittextlayout"
+        style="@style/AuthFieldContainer">
+        <EditText
+            android:id="@+id/emailField"
+            android:hint="username"
+            style="@style/AuthEditText"/>
+        <requestFocus/>
+
+
+        <EditText
+            style="@style/AuthEditText"
+            android:id="@+id/passwordField"
+            android:hint="password"
+            android:inputType="textPassword"/>
+
+        <EditText
+            style="@style/AuthEditText"
+            android:inputType="textEmailAddress"
+            android:id="@+id/emailField"
+            android:hint="youremail@sample.com"/>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="10dp"
+        android:layout_height="1dp"
+        android:id="@+id/buttonDivider"
+        android:layout_below="@+id/edittextlayout"
+        android:layout_centerHorizontal="true"
+        />
+
+    <Button
+        style="@style/AuthButton"
+        android:id="@+id/signupButton"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/edittextlayout"
+        android:text="SignUP!"
+        android:layout_toLeftOf="@id/buttonDivider"
+        android:layout_marginRight="0dp"/>
+    <Button
+        style="@style/AuthButton"
+        android:id="@+id/cancelButton"
+        android:layout_marginLeft="0dp"
+        android:layout_below="@+id/edittextlayout"
+        android:layout_centerHorizontal="true"
+        android:text="cancel"
+        android:layout_toRightOf="@id/buttonDivider"/>
+</RelativeLayout>
+

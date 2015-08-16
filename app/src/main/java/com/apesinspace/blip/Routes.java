@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * Created by samnwosu on 8/15/15.
  */
 public class Routes {
+    private String mId;
     private String mName;
     private String mAuthor;
     private int mAvgRating;
@@ -44,6 +45,12 @@ public class Routes {
 
     public void setName(String name) {
         mName = name;
+    }
+
+    public String getId() { return mId;}
+
+    public void setId(String id) {
+        mId = id;
     }
 
     public Routes(String name) {

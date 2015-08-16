@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ListRoutes extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class ListRoutes extends AppCompatActivity  {
 
 
     private static final String EXTRA_ROUTE_ID = "com.example.EXTRA_ROUTE_ID";
@@ -65,29 +65,6 @@ public class ListRoutes extends AppCompatActivity implements GoogleApiClient.Con
     protected String lat;
     protected String longitude;
 
-
-    GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
-    double latitude;
-    double longitude;
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-            latitude = mLastLocation.getLatitude();
-            longitude = mLastLocation.getLongitude();
-        }
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

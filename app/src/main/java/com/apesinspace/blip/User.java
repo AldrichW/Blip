@@ -15,7 +15,6 @@ public class User {
 
     public User() {
         mName = "";
-        mName = "";
         mBikeModel = "";
         mReview = "";
         mRating = 0;

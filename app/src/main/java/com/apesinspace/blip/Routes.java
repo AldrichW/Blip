@@ -57,6 +57,9 @@ public class Routes {
         mName = name;
     }
 
+    public Routes(){
+    }
+
     public Routes(JSONObject object)throws JSONException{
         mName = object.getString("Name");
         mAuthor = object.getString("Author");

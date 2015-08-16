@@ -70,45 +70,45 @@ public class ListRoutes extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-//        OkHttpClient client = new OkHttpClient();
-//        RequestBody body = RequestBody.create(JSON,"{\n" +
-//                "   \"data\": \"Test\",\n" +
-//                "   \"bool\": true\n" +
-//                "}");
-//        Request request = new Request.Builder()
-//                .url("http://node.jrdbnntt.com/resources/test")
-//                .post(body)
-//                .build();
-//        Call call = client.newCall(request);
-//        call.enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Request request, IOException e) {
-//                Log.e(TAG, e.getMessage());
-//                //Todo:Create alert dialog that notifies user what happend
-//            }
-//            @Override
-//            public void onResponse(Response response) throws IOException {
-//                try {
-//                    //Todo: check to see if authenticated if so start next activity else show error
-//                    if (response.isSuccessful()) {
-//                        //process response
-//                        final JSONObject jsonResponse = new JSONObject(response.body().string());
-//                        Log.d(TAG,jsonResponse.toString());
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                //getRoutes(jsonResponse);
-//                            }
-//                        });
-//                    }else{
-//                        // TODO: Show response error to user
-//                    }
-//                }catch (Exception e){
-//                    //TODO: Show error to user
-//                    Log.e("TAG", e.getMessage());
-//                }
-//            }
-//        });
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(JSON,"{\n" +
+                "   \"data\": \"Test\",\n" +
+                "   \"bool\": true\n" +
+                "}");
+        Request request = new Request.Builder()
+                .url("http://node.jrdbnntt.com/resources/test")
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                Log.e(TAG, e.getMessage());
+                //Todo:Create alert dialog that notifies user what happend
+            }
+            @Override
+            public void onResponse(Response response) throws IOException {
+                try {
+                    //Todo: check to see if authenticated if so start next activity else show error
+                    if (response.isSuccessful()) {
+                        //process response
+                        final JSONObject jsonResponse = new JSONObject(response.body().string());
+                        Log.d(TAG,jsonResponse.toString());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //getRoutes(jsonResponse);
+                            }
+                        });
+                    }else{
+                        // TODO: Show response error to user
+                    }
+                }catch (Exception e){
+                    //TODO: Show error to user
+                    Log.e("TAG", e.getMessage());
+                }
+            }
+        });
     }
 
     private void getRoutes(JSONObject jsonResponse) {

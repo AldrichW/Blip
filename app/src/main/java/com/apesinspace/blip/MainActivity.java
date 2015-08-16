@@ -7,6 +7,7 @@ import android.support.v4.internal.view.SupportMenuItem;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,17 +15,31 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     protected ListView mUserListView;
     protected List<User> mUsers;
     protected ImageView mRouteImageView;
     private ShareActionProvider mShareActionProvider;
     protected Intent mShareIntent;
+    protected Routes mRoutes;
 
 
     @Override
@@ -39,13 +54,8 @@ public class MainActivity extends AppCompatActivity {
         mShareIntent.setType("text/plain");
         mShareIntent.putExtra(Intent.EXTRA_TEXT, "From me to you, this text is new.");
 
-        mUsers.add(new User("Sam","This is a review blalb"));
-        mUsers.add(new User("Sam", "This is a review blalb"));
-        mUsers.add(new User("Sam", "This is a review blalb"));
-        mUsers.add(new User("Sam", "This is a review blalb"));
-        mUsers.add(new User("Sam", "This is a review blalb"));
-        mUsers.add(new User("Sam", "This is a review blalb"));
-
+        getRouterDetails();
+        getUsersReviews();
         mRouteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,18 +66,118 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //if(mUserListView.getAdapter() == null) {
+    private void getRouterDetails() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("http://node.jrdbnntt.com/routes/getRouteById/55cfffecfe950757570c19b6")
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                Log.e(TAG, e.getMessage());
+                //Todo:Create alert dialog that notifies user what happend
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                try {
+                    //Todo: check to see if authenticated if so start next activity else show error
+                    if (response.isSuccessful()) {
+                        //process response
+                        final JSONObject jsonResponse = new JSONObject(response.body().string());
+                        Log.d(TAG, jsonResponse.toString());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                handleResponse(jsonResponse);
+                            }
+                        });
+                    } else {
+                        // TODO: Show response error to user
+                        Log.e("TAG", "the response was unsuccessful");
+                    }
+                } catch (Exception e) {
+                    //TODO: Show error to user
+                    Log.e("TAG", e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void handleResponse(JSONObject jsonResponse) {
+        try{
+            mRoutes.setId(jsonResponse.getString("id"));
+            mRoutes.setName(jsonResponse.getString("name"));
+            mRoutes.setAvgRating(jsonResponse.getInt("star_rating"));
+            JSONObject creator = jsonResponse.getJSONObject("original_driver");
+            mRoutes.setAuthor(creator.getString("username"));
+        }catch (JSONException e){
+
+        }
+    }
+
+    private void getUsersReviews() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("http://node.jrdbnntt.com/routes/getRouteReviewsById/55cfffecfe950757570c19b6")
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                Log.e(TAG, e.getMessage());
+                //Todo:Create alert dialog that notifies user what happend
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                try {
+                    //Todo: check to see if authenticated if so start next activity else show error
+                    if (response.isSuccessful()) {
+                        //process response
+                        final JSONObject jsonResponse = new JSONObject(response.body().string());
+                        Log.d(TAG, jsonResponse.toString());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                handleUserResponse(jsonResponse);
+                            }
+                        });
+                    } else {
+                        // TODO: Show response error to user
+                        Log.e("TAG", "the response was unsuccessful");
+                    }
+                } catch (Exception e) {
+                    //TODO: Show error to user
+                    Log.e("TAG", e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void handleUserResponse(JSONObject jsonResponse) {
+        try{
+        JSONArray array = jsonResponse.getJSONArray("reviewData");
+        for(int i = 0; i < array.length(); i++) {
+            JSONObject review = array.getJSONObject(i);
+            User user = new User();
+            user.setReview(review.getString("review"));
+            user.setRating(review.getInt("star_rating"));
+            JSONObject obj = review.getJSONObject("user");
+            user.setName(obj.getString("username"));
+            user.setImageUrl(obj.getString("profile_pic"));
+            mUsers.add(user);
+        }
             UserAdapter adapter = new UserAdapter(MainActivity.this, mUsers);
             mUserListView.setAdapter(adapter);
-        //}else{
-            //refill
-          //  ((UserAdapter)mUserListView.getAdapter()).refill(mUsers);
-        //}
+
+        }catch (JSONException e){
+
+        }
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

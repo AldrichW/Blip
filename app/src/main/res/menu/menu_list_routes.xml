@@ -3,9 +3,14 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.example.samnwosu.blip.ListRoutes">
     <item android:id="@+id/action_settings"
-          android:title="@string/action_settings"
+          android:title="Take Picture"
           android:orderInCategory="100"
           app:showAsAction="never"/>
+    <item android:id="@+id/action_pick_photo"
+          android:title="Choose Photo"
+          android:orderInCategory="100"
+          app:showAsAction="never"
+          />
     <item android:id="@+id/action_logout"
     android:title="logout"
     android:orderInCategory="100"

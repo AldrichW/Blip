@@ -149,9 +149,11 @@ public class MainActivity extends AppCompatActivity {
     private void getUsersReviews() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://node.jrdbnntt.com/routes/getRouteReviewsById/55cfffecfe950757570c19b6")
+                .url("http://node.jrdbnntt.com/routes/getRouteReviewsById/"+mRouteId)
                 .build();
         Call call = client.newCall(request);
+        Log.d(TAG,"http://node.jrdbnntt.com/routes/getRouteReviewsById/"+mRouteId);
+
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {

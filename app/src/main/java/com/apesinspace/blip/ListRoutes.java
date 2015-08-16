@@ -77,12 +77,6 @@ public class ListRoutes extends AppCompatActivity {
         }
 
         mRoutes = new ArrayList<>();
-        mRoutes.add(new Routes("this"));
-        mRoutes.add(new Routes("is"));
-        mRoutes.add(new Routes("sparta"));
-        Routes r = new Routes("test");
-        r.setDistance(100);
-        mRoutes.add(r);
         mRouteList = (ListView)findViewById(R.id.listView);
         mRouteList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -119,7 +113,7 @@ public class ListRoutes extends AppCompatActivity {
         mRouteList.setAdapter(mAdapter);
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://node.jrdbnntt.com/routes/find_routes/-1.444031/54.950512/100")
+                .url("http://node.jrdbnntt.com/routes/find_routes/-1.444031/54.950512/10000")
                 .build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
@@ -196,6 +190,11 @@ public class ListRoutes extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             takePhoto();
+            return true;
+        }
+
+        if (id == R.id.action_logout){
+            ListRoutes.this.getSharedPreferences(MY_PREFS_NAME, 0).edit().clear().commit();
             return true;
         }
 

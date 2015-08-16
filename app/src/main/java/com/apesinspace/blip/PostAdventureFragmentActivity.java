@@ -81,6 +81,8 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
+
+                //Post to twitter
             }
         });
 

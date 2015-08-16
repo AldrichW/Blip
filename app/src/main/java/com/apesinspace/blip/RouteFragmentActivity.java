@@ -3,6 +3,8 @@ package com.apesinspace.blip;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -50,11 +52,13 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
 
     protected TextView infoTitle;
     HashMap<Marker, MarkerInfo>  markerMap;
+    HashMap<String, Integer> imageResourceMap;
 
     public enum MarkerType {
         SCENIC_POINT,
         CAUTION_POINT,
-        POINT_OF_INTEREST
+        POINT_OF_INTEREST,
+        GAS_STATION
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +71,7 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
         mapFragment.getMapAsync(this);
 
         markerMap = new HashMap<Marker, MarkerInfo>();
-
+        imageResourceMap = new HashMap<String, Integer>();
         final ImageButton checkMarkButton = (ImageButton)findViewById(R.id.checkMarkButton);
         final ImageButton cancelButton = (ImageButton)findViewById(R.id.cancelTripButton);
 
@@ -121,10 +125,12 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
                     public View getInfoContents(Marker marker) {
                         View contentView = getLayoutInflater().inflate(R.layout.info_contents, null);
                         MarkerInfo info = markerMap.get(marker);
-                        TextView infoTitle = (TextView)contentView.findViewById(R.id.info_title);
+                        TextView infoTitle = (TextView) contentView.findViewById(R.id.info_title);
                         infoTitle.setText(info.getInfoTitle());
-                        TextView infoText = (TextView)contentView.findViewById(R.id.info_text);
+                        TextView infoText = (TextView) contentView.findViewById(R.id.info_text);
                         infoText.setText(info.getInfoText());
+                        ImageView infoImage = (ImageView) contentView.findViewById(R.id.info_image);
+                        infoImage.setImageResource(imageResourceMap.get(info.getImage()).intValue());
 
                         return contentView;
                     }
@@ -169,8 +175,10 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
 
             MarkerInfo markerInfo = new MarkerInfo();
             markerInfo.setInfoTitle(infoTitle);
+            markerInfo.setImagePath("scenic_image");
             markerInfo.setInfoText(infoText);
             markerMap.put(newMarker, markerInfo);
+            imageResourceMap.put("scenic_image", R.drawable.scenic_image);
 
         }
         else if(MarkerType.CAUTION_POINT == markerType){
@@ -181,8 +189,10 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
 
             MarkerInfo markerInfo = new MarkerInfo();
             markerInfo.setInfoTitle(infoTitle);
+            markerInfo.setImagePath("slippery_road");
             markerInfo.setInfoText(infoText);
             markerMap.put(newMarker, markerInfo);
+            imageResourceMap.put("slippery_road", R.drawable.slippery_road);
 
         }
         else if(MarkerType.POINT_OF_INTEREST == markerType){
@@ -193,9 +203,23 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
 
             MarkerInfo markerInfo = new MarkerInfo();
             markerInfo.setInfoTitle(infoTitle);
+            markerInfo.setImagePath("motorcycle_shop");
             markerInfo.setInfoText(infoText);
             markerMap.put(newMarker, markerInfo);
+            imageResourceMap.put("motorcycle_shop", R.drawable.motorcycle_shop);
+        }
+        else if(MarkerType.GAS_STATION == markerType) {
+            //Make marker yellow
+            Marker newMarker = googleMap.addMarker(new MarkerOptions()
+                    .position(point)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
+            MarkerInfo markerInfo = new MarkerInfo();
+            markerInfo.setInfoTitle(infoTitle);
+            markerInfo.setImagePath("gas_station");
+            markerInfo.setInfoText(infoText);
+            markerMap.put(newMarker, markerInfo);
+            imageResourceMap.put("gas_station", R.drawable.gas_station);
         }
     }
 
@@ -409,13 +433,16 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
                     if(j == 36){
-                        addMarker(position, MarkerType.SCENIC_POINT,"Scenic Viewpoint", "Wow, such a nice view!");
+                        addMarker(position, MarkerType.GAS_STATION, "Gas Station", "Last one you'll see for awhile.");
                     }
                     if(j == 500){
                         addMarker(position, MarkerType.CAUTION_POINT, "Take Caution!", "Be careful! The roads get really slippery here.");
                     }
                     if(j == 1000){
                         addMarker(position, MarkerType.POINT_OF_INTEREST, "Point of Interest", "Nice little bike shop nearby.");
+                    }
+                    if (j == 3000) {
+                        addMarker(position, MarkerType.SCENIC_POINT,"Scenic Viewpoint", "Wow, such a nice view!");
                     }
 
                     points.add(position);

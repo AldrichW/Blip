@@ -1,20 +1,18 @@
 package com.apesinspace.blip;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.RatingBar;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,12 +20,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
@@ -43,49 +39,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class RouteFragmentActivity extends FragmentActivity implements OnMapReadyCallback{
+/**
+ * Created by aldrichW on 15-08-15.
+ */
+public class PostAdventureFragmentActivity extends FragmentActivity implements OnMapReadyCallback {
+
 
     GoogleMap googleMap;
-    protected View contentView;
+    HashMap<Marker, MarkerInfo> markerMap;
+    RatingBar ratingBar;
+    EditText editableText;
 
-    protected TextView infoTitle;
-    HashMap<Marker, MarkerInfo>  markerMap;
-
-    public enum MarkerType {
-        SCENIC_POINT,
-        CAUTION_POINT,
-        POINT_OF_INTEREST
-    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
-        setContentView(R.layout.activity_route_fragment);
+        setContentView(R.layout.activity_post_adventure_fragment);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         markerMap = new HashMap<Marker, MarkerInfo>();
 
-        final ImageButton checkMarkButton = (ImageButton)findViewById(R.id.checkMarkButton);
-        final ImageButton cancelButton = (ImageButton)findViewById(R.id.cancelTripButton);
-
-        checkMarkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(RouteFragmentActivity.this, PostAdventureFragmentActivity.class);
-                startActivity(i);
-            }
-        });
-
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
+        RatingDialogFragment dialog = new RatingDialogFragment();
+        String tag = "strings";
+        ratingBar = (RatingBar)findViewById(R.id.ratingBar);
+        editableText = (EditText)findViewById(R.id.editText);
+        
+        dialog.show(getFragmentManager(), tag);
     }
 
     @Override
@@ -105,34 +87,6 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
         settings.setZoomControlsEnabled(true);
         settings.setCompassEnabled(true);
         settings.setScrollGesturesEnabled(true);
-        settings.setZoomGesturesEnabled(true);
-
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-
-                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-                    @Override
-                    public View getInfoWindow(Marker marker) {
-                        return null;
-                    }
-
-                    @Override
-                    public View getInfoContents(Marker marker) {
-                        View contentView = getLayoutInflater().inflate(R.layout.info_contents, null);
-                        MarkerInfo info = markerMap.get(marker);
-                        TextView infoTitle = (TextView)contentView.findViewById(R.id.info_title);
-                        infoTitle.setText(info.getInfoTitle());
-                        TextView infoText = (TextView)contentView.findViewById(R.id.info_text);
-                        infoText.setText(info.getInfoText());
-
-                        return contentView;
-                    }
-                });
-                return false;
-            }
-        });
-
 
     }
 
@@ -156,47 +110,6 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void addMarker(final LatLng point, final MarkerType markerType, final String infoTitle, final String infoText){
-
-
-        if (MarkerType.SCENIC_POINT == markerType){
-            //Make Marker purple
-            Marker newMarker = googleMap.addMarker(new MarkerOptions()
-                    .position(point)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-
-            MarkerInfo markerInfo = new MarkerInfo();
-            markerInfo.setInfoTitle(infoTitle);
-            markerInfo.setInfoText(infoText);
-            markerMap.put(newMarker, markerInfo);
-
-        }
-        else if(MarkerType.CAUTION_POINT == markerType){
-            //Make marker red
-            Marker newMarker = googleMap.addMarker(new MarkerOptions()
-                    .position(point)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-
-            MarkerInfo markerInfo = new MarkerInfo();
-            markerInfo.setInfoTitle(infoTitle);
-            markerInfo.setInfoText(infoText);
-            markerMap.put(newMarker, markerInfo);
-
-        }
-        else if(MarkerType.POINT_OF_INTEREST == markerType){
-            //Make marker yellow
-            Marker newMarker = googleMap.addMarker(new MarkerOptions()
-                    .position(point)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-
-            MarkerInfo markerInfo = new MarkerInfo();
-            markerInfo.setInfoTitle(infoTitle);
-            markerInfo.setInfoText(infoText);
-            markerMap.put(newMarker, markerInfo);
-
-        }
     }
 
     public class DirectionsJSONParser {
@@ -408,15 +321,6 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
-                    if(j == 36){
-                        addMarker(position, MarkerType.SCENIC_POINT,"Scenic Viewpoint", "Wow, such a nice view!");
-                    }
-                    if(j == 100){
-                        addMarker(position, MarkerType.CAUTION_POINT, "Take Caution!", "Be careful! The roads get really slippery here.");
-                    }
-                    if(j == 300){
-                        addMarker(position, MarkerType.POINT_OF_INTEREST, "Point of Interest", "Nice little bike shop nearby.");
-                    }
 
                     points.add(position);
                 }

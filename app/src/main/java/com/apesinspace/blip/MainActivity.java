@@ -1,16 +1,22 @@
 package com.apesinspace.blip;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.internal.view.SupportMenuItem;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ShareActionProvider;
+import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -19,6 +25,7 @@ import android.widget.TextView;
 
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -37,6 +44,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = MainActivity.class.getSimpleName();
     private static final String EXTRA_ROUTE_ID = "com.example.EXTRA_ROUTE_ID";
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
 
 
     protected ListView mUserListView;
@@ -47,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected TextView mDiscription;
     protected RatingBar mAvrageRating;
     protected String mRouteId;
+    protected String mReview;
 
     private ShareActionProvider mShareActionProvider;
     protected Intent mShareIntent;
@@ -220,8 +230,6 @@ public class MainActivity extends AppCompatActivity {
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(mShareIntent);
         }
-
-
         return true;
     }
 
@@ -236,6 +244,61 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        if( id ==R.id.add_review){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Add Review");
+            LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+            final View dialogView = inflater.inflate(R.layout.add_review, null);
+            builder.setView(dialogView);
+
+// Set up the buttons
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    EditText review = (EditText) dialogView.findViewById(R.id.editText2);
+                    RatingBar bar = (RatingBar) dialogView.findViewById(R.id.ratingBar3);
+                    mReview = review.getText().toString();
+                    OkHttpClient client = new OkHttpClient();
+                    JSONObject newReview = new JSONObject();
+                    try {
+                        newReview.put("route", mRouteId);
+                        newReview.put("user", BlipApplication.getCurrentUser().getId());
+                        newReview.put("star_rating", bar.getRating());
+                        newReview.put("review", mReview);
+                    } catch (JSONException e) {
+
+                    }
+                    RequestBody body = RequestBody.create(JSON, newReview.toString());
+                    Log.d(TAG, newReview.toString());
+                    Request request = new Request.Builder()
+                            .url("http://node.jrdbnntt.com/routes/saveReviewByRoute")
+                            .post(body)
+                            .build();
+                    Call call = client.newCall(request);
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                Log.d(TAG,"We saved a review!");
+                            }
+                        }
+                    });
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
         }
 
         return super.onOptionsItemSelected(item);

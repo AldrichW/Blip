@@ -8,5 +8,10 @@
         android:title="Share"
         bwq:actionProviderClass="android.support.v7.widget.ShareActionProvider"
         bwq:showAsAction="always"/>
+    <item
+        android:title="Add Review"
+        android:id="@+id/add_review"
+        android:icon="@android:drawable/btn_plus"
+        app:showAsAction="always"/>
 
 </menu>

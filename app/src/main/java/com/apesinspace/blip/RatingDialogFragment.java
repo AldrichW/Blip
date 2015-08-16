@@ -11,7 +11,9 @@ import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.RatingBar;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 
 /**
  * Created by aldrichW on 15-08-15.
@@ -34,6 +36,8 @@ public class RatingDialogFragment extends DialogFragment {
 
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
+                        saveFeedback();
                         // Save your rating and feedback
                         builder.setView(inflater.inflate(R.layout.social_view, null));
                         builder.setTitle("Share your adventure on Twitter!");
@@ -56,5 +60,7 @@ public class RatingDialogFragment extends DialogFragment {
 
     public void saveFeedback() {
         //Some post request to save feedback
+
+
     }
 }

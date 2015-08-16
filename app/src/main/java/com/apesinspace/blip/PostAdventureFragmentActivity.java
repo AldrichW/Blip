@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -57,17 +58,17 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
 
         setContentView(R.layout.activity_post_adventure_fragment);
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
         markerMap = new HashMap<Marker, MarkerInfo>();
 
         RatingDialogFragment dialog = new RatingDialogFragment();
         String tag = "strings";
         ratingBar = (RatingBar)findViewById(R.id.ratingBar);
         editableText = (EditText)findViewById(R.id.editText);
-        
+
         dialog.show(getFragmentManager(), tag);
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -88,6 +89,17 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
         settings.setCompassEnabled(true);
         settings.setScrollGesturesEnabled(true);
 
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Marker marker = googleMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+
+                NewMarkerDialogFragment newDialog = new NewMarkerDialogFragment();
+                newDialog.show(getFragmentManager(), "new_marker");
+            }
+        });
     }
 
     @Override
@@ -304,7 +316,6 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
 
             // Traversing through all the routes
             for(int i=0;i<result.size();i++){

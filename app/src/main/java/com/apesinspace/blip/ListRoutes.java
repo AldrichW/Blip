@@ -1,6 +1,7 @@
 package com.apesinspace.blip;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -31,6 +32,7 @@ public class ListRoutes extends AppCompatActivity {
 
 
     private static final String EXTRA_ROUTE_ID = "com.example.EXTRA_ROUTE_ID";
+    public static final String MY_PREFS_NAME = "MyPrefsFile";
     public static final String TAG = ListRoutes.class.getSimpleName();
     protected List<Routes> mRoutes;
     protected ListView mRouteList;
@@ -40,7 +42,18 @@ public class ListRoutes extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_routes);
         if(!BlipApplication.getLoggedIn()){
-            navigateToLogin();
+            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            String restoredText = prefs.getString("ID", null);
+            if (restoredText != null) {
+                User user = new User();
+                user.setName(prefs.getString("NAME", ""));//"No name defined" is the default value.
+                user.setId(prefs.getString("ID", "")); //0 is the default value.
+                user.setImageUrl(prefs.getString("PIC", ""));
+                BlipApplication.setCurrentUser(user);
+                Log.d(TAG,user.getId());
+            }else {
+                navigateToLogin();
+            }
         }
         mRoutes = new ArrayList<>();
         mRoutes.add(new Routes("this"));

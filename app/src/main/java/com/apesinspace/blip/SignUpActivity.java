@@ -2,6 +2,7 @@ package com.apesinspace.blip;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected EditText mEmail;
     protected Button mSignUpButton;
     protected Button mCancelButton;
+    public static final String MY_PREFS_NAME = "MyPrefsFile";
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
     public static final String TAG = SignUpActivity.class.getSimpleName();
@@ -43,7 +45,7 @@ public class SignUpActivity extends AppCompatActivity {
             actionbar.hide();
         }
 
-        mUsername = (EditText) findViewById(R.id.emailField);
+        mUsername = (EditText) findViewById(R.id.usernameField);
         mPassword = (EditText) findViewById(R.id.passwordField);
         mEmail = (EditText) findViewById(R.id.emailField);
         mCancelButton = (Button) findViewById(R.id.cancelButton);
@@ -141,6 +143,19 @@ public class SignUpActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }else{
+            User user = new User();
+            try {
+                user.setId(jsonResponse.getString("id"));
+                user.setName(jsonResponse.getString("name"));
+                user.setImageUrl(jsonResponse.getString("profile_pic"));
+            }catch (JSONException e){
+            }
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE).edit();
+            editor.putString("USER",user.getName());
+            editor.putString("ID", user.getId());
+            editor.putString("PIC", user.getImageUrl());
+            editor.apply();
+            BlipApplication.setCurrentUser(user);
             BlipApplication.setIsLoggedIn(true);
             Intent intent = new Intent(SignUpActivity.this,ListRoutes.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,6 +24,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
@@ -47,19 +52,41 @@ public class ListRoutes extends AppCompatActivity {
 
     private static final String EXTRA_ROUTE_ID = "com.example.EXTRA_ROUTE_ID";
     public static final String MY_PREFS_NAME = "MyPrefsFile";
+    private GoogleApiClient mGoogleApiClient;
     public static final String TAG = ListRoutes.class.getSimpleName();
     protected List<Routes> mRoutes;
     protected ListView mRouteList;
     public static final int TAKE_PHOTO_REQUEST = 0;
+    public static final int CHOOSE_PHOTO_REQUEST = 2;
     public static final int MEDIA_TYPE_IMAGE = 1;
     protected Uri mMediaUri;
     protected EditText mEditText;
     protected RouteAdapter mAdapter;
+    protected String lat;
+    protected String longitude;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_routes);
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+// Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                makeUseOfNewLocation(location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         if(!BlipApplication.getLoggedIn()){
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -110,11 +137,14 @@ public class ListRoutes extends AppCompatActivity {
             }
         });
 
+
         mRouteList.setAdapter(mAdapter);
         OkHttpClient client = new OkHttpClient();
+
         Request request = new Request.Builder()
-                .url("http://node.jrdbnntt.com/routes/find_routes/-1.444031/54.950512/10000")
+                .url("http://node.jrdbnntt.com/routes/find_routes/-122.0771976/37.4143229/10000")
                 .build();
+        Log.d(TAG,request.toString());
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
@@ -145,6 +175,13 @@ public class ListRoutes extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void makeUseOfNewLocation(Location location) {
+        lat = ""+location.getLatitude();
+        longitude = "" +location.getLongitude();
+        Log.d(TAG,""+location.getLatitude());
+        Log.d(TAG, "" + location.getLongitude());
     }
 
     private void getRoutes(JSONObject jsonResponse) {
@@ -190,6 +227,13 @@ public class ListRoutes extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             takePhoto();
+            return true;
+        }
+
+        if(id == R.id.action_pick_photo){
+            Intent choosePhoto = new Intent(Intent.ACTION_GET_CONTENT);
+            choosePhoto.setType("image/*");
+            startActivityForResult(choosePhoto,CHOOSE_PHOTO_REQUEST);
             return true;
         }
 
@@ -274,6 +318,13 @@ public class ListRoutes extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
+            if(requestCode == CHOOSE_PHOTO_REQUEST) {
+                if (data == null) {
+                    Toast.makeText(this, "There was an error", Toast.LENGTH_LONG).show();
+                } else {
+                    mMediaUri = data.getData();
+                }
+            }
             String fileName = FileHelper.getFileName(this,mMediaUri,"image");
             OkHttpClient client = new OkHttpClient();
             RequestBody requestBody = new MultipartBuilder()
@@ -323,5 +374,6 @@ public class ListRoutes extends AppCompatActivity {
             Toast.makeText(this,"Error", Toast.LENGTH_LONG).show();
         }
     }
+
 }
 

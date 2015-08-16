@@ -411,10 +411,10 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
                     if(j == 36){
                         addMarker(position, MarkerType.SCENIC_POINT,"Scenic Viewpoint", "Wow, such a nice view!");
                     }
-                    if(j == 100){
+                    if(j == 500){
                         addMarker(position, MarkerType.CAUTION_POINT, "Take Caution!", "Be careful! The roads get really slippery here.");
                     }
-                    if(j == 300){
+                    if(j == 1000){
                         addMarker(position, MarkerType.POINT_OF_INTEREST, "Point of Interest", "Nice little bike shop nearby.");
                     }
 

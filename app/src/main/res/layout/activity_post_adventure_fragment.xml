@@ -8,5 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <Button
+        android:id="@+id/save_route"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="61dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="SAVE ROUTE"
+        android:textColor="@color/abc_primary_text_material_dark"
+        android:backgroundTint="@color/material_blue_grey_800"/>
+
 
 </RelativeLayout>

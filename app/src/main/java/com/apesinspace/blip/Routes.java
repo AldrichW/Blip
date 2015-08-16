@@ -17,6 +17,16 @@ public class Routes {
     private String mDiscription;
     private String mAuthorImage;
 
+    public int getDistance() {
+        return mDistance;
+    }
+
+    public void setDistance(int distance) {
+        mDistance = distance;
+    }
+
+    private int mDistance;
+
 
     public String getDiscription() {
         return mDiscription;

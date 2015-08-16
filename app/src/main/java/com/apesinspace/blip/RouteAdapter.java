@@ -56,7 +56,7 @@ public class RouteAdapter extends ArrayAdapter<Routes> implements Filterable{
         Routes route = mFiltered.get(position);
         holder.routeImageView.setImageResource(R.drawable.test);
         holder.routeLabel.setText(route.getName());
-        holder.routeRating.setNumStars(3);
+        holder.routeRating.setNumStars(route.getAvgRating());
 
         return convertView;
     }

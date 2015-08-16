@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -28,6 +29,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.Route;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,6 +60,7 @@ public class ListRoutes extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_routes);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         if(!BlipApplication.getLoggedIn()){
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             String restoredText = prefs.getString("ID", null);
@@ -86,8 +89,8 @@ public class ListRoutes extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(ListRoutes.this, MainActivity.class);
                 //get id of the route that was clicked on
-                //String id = mRoutes.get(position).getId();
-                //intent.putExtra(EXTRA_ROUTE_ID,id);
+                String routeId = mRoutes.get(position).getId();
+                intent.putExtra(EXTRA_ROUTE_ID,routeId);
                 startActivity(intent);
             }
         });
@@ -115,13 +118,8 @@ public class ListRoutes extends AppCompatActivity {
 
         mRouteList.setAdapter(mAdapter);
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(JSON,"{\n" +
-                "   \"data\": \"Test\",\n" +
-                "   \"bool\": true\n" +
-                "}");
         Request request = new Request.Builder()
-                .url("http://node.jrdbnntt.com/resources/test")
-                .post(body)
+                .url("http://node.jrdbnntt.com/routes/find_routes/-1.444031/54.950512/100")
                 .build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
@@ -141,7 +139,7 @@ public class ListRoutes extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                //getRoutes(jsonResponse);
+                                getRoutes(jsonResponse);
                             }
                         });
                     }else{
@@ -160,10 +158,12 @@ public class ListRoutes extends AppCompatActivity {
             //todo:show error
         }else {
             try{
-                JSONArray jsonRoutes = jsonResponse.getJSONArray("routes");
+                JSONArray jsonRoutes = jsonResponse.getJSONArray("found");
                 for(int i = 0; i < jsonRoutes.length(); i++){
-                    mRoutes.add(new Routes(jsonRoutes.getJSONObject(i).getString("route")));
+                    mRoutes.add(new Routes(jsonRoutes.getJSONObject(i)));
                 }
+                mAdapter = new RouteAdapter(ListRoutes.this,mRoutes);
+                mRouteList.setAdapter(mAdapter);
             }catch (JSONException e){
                 Log.e(TAG,e.getMessage());
             }

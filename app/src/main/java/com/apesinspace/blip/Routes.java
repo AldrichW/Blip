@@ -90,10 +90,9 @@ public class Routes {
     }
 
     public Routes(JSONObject object)throws JSONException{
-        mName = object.getString("Name");
-        mAuthor = object.getString("Author");
-        mAvgRating = object.getInt("AvgRating");
-        JSONObject Statuses = object.getJSONObject("Status");
-
+        mName = object.getString("name");
+        mId = object.getString("id");
+        mAvgRating = object.getInt("star_rating");
+        mDistance  = object.getInt("distance");
     }
 }

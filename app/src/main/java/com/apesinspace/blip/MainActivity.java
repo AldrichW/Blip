@@ -36,6 +36,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = MainActivity.class.getSimpleName();
+    private static final String EXTRA_ROUTE_ID = "com.example.EXTRA_ROUTE_ID";
+
 
     protected ListView mUserListView;
     protected List<User> mUsers;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     protected TextView mAuthorName;
     protected TextView mDiscription;
     protected RatingBar mAvrageRating;
+    protected String mRouteId;
 
     private ShareActionProvider mShareActionProvider;
     protected Intent mShareIntent;
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mRouteId = getIntent().getStringExtra(EXTRA_ROUTE_ID);
         mUserListView = (ListView) findViewById(R.id.listView);
         mRouteImageView = (ImageView) findViewById(R.id.imageView);
         mAuthorImageView = (ImageView)findViewById(R.id.authorIcon);
@@ -82,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     private void getRouterDetails() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://node.jrdbnntt.com/routes/getRouteById/55cfffecfe950757570c19b6")
+                .url("http://node.jrdbnntt.com/routes/getRouteById/"+mRouteId)
                 .build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {

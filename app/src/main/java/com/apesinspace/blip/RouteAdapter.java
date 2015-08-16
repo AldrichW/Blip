@@ -13,8 +13,11 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by samnwosu on 8/15/15.
@@ -24,6 +27,8 @@ public class RouteAdapter extends ArrayAdapter<Routes> implements Filterable{
     protected Context mContext;
     protected List<Routes> mRoutes;
     protected List<Routes>mFiltered;
+    protected List<String>urls;
+    private Random rand = new Random(System.currentTimeMillis());
     private ItemFilter mFilter = new ItemFilter();
 
     public RouteAdapter(Context context,List<Routes>routes) {
@@ -33,6 +38,17 @@ public class RouteAdapter extends ArrayAdapter<Routes> implements Filterable{
         mFiltered = new ArrayList<>();
         mRoutes.addAll(routes);
         mFiltered.addAll(routes);
+        urls = new ArrayList<>();
+        urls.add("http://node.jrdbnntt.com/img/PC/bridge1.jpg ");
+        urls.add("http://node.jrdbnntt.com/img/PC/bridge2.jpg ");
+        urls.add("http://node.jrdbnntt.com/img/PC/green1.jpg");
+        urls.add("http://node.jrdbnntt.com/img/PC/ice1.jpg");
+        urls.add("http://node.jrdbnntt.com/img/PC/mountains1.jpg");
+        urls.add("http://node.jrdbnntt.com/img/PC/offroad1.jpg");
+        urls.add("http://node.jrdbnntt.com/img/PC/plains1.jpg");
+        urls.add("http://node.jrdbnntt.com/img/PC/slippery1.jpg");
+        urls.add("http://node.jrdbnntt.com/img/PC/water1.jpg");
+
     }
 
     public Filter getFilter() {
@@ -54,7 +70,10 @@ public class RouteAdapter extends ArrayAdapter<Routes> implements Filterable{
         }
 
         Routes route = mFiltered.get(position);
-        holder.routeImageView.setImageResource(R.drawable.test);
+        int index = rand.nextInt(mFiltered.size());
+
+        Picasso.with(mContext).load(urls.get(index)).into(holder.routeImageView);
+        //holder.routeImageView.setImageResource(R.drawable.test);
         holder.routeLabel.setText(route.getName());
         holder.routeRating.setNumStars(route.getAvgRating());
 

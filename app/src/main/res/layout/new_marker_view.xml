@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Spinner
+        android:id="@+id/marker_type_spinner"
+        android:layout_width="500dp"
+        android:layout_height="40dp"
+        android:drawSelectorOnTop="true"
+        android:entries="@array/spinnerItems"/>
+
+    <ImageView
+        android:id="@+id/imgView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+
+
+    <Button
+        android:id="@+id/upload_button"
+        android:layout_width="500dp"
+        android:layout_height="50dp"
+        android:text="Upload Photo"
+        android:layout_gravity="center"/>
+
+    <EditText
+        android:id="@+id/marker_description"
+        android:layout_width="500dp"
+        android:layout_height="60dp"
+        android:inputType="textMultiLine"/>
+
+
+
+
+
+
+</LinearLayout>

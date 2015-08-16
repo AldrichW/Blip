@@ -2,40 +2,92 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#CFD8DC"
+                android:background="#EEEEEE"
                 android:orientation="vertical"
                 tools:context=".MainActivity">
 
     <ImageView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:id="@+id/imageView"
         android:src="@drawable/map"
         android:scaleType="fitXY"
-        android:layout_weight=".1"/>
+       />
+    <!--<LinearLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!-->-->
+        <!--<ImageView-->
+            <!--android:layout_width="40dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:src="@android:drawable/ic_menu_gallery"/>-->
+        <!--<ImageView-->
+            <!--android:layout_width="40dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:src="@android:drawable/ic_menu_gallery"/>-->
+        <!--<ImageView-->
+            <!--android:layout_width="40dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:src="@android:drawable/ic_menu_gallery"/>-->
+        <!--<ImageView-->
+            <!--android:layout_width="40dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:src="@android:drawable/ic_menu_gallery"/>-->
+    <!--</LinearLayout>-->
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_gallery"/>
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_gallery"/>
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_gallery"/>
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_gallery"/>
+        android:layout_height="55dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/authorIcon"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:src="@android:drawable/ic_menu_gallery"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/authorName"
+                android:layout_alignParentRight="true"
+                android:textSize="16sp"
+                android:text="Test Name"
+                android:paddingTop="8dp"
+                android:paddingLeft="@dimen/activity_vertical_margin"
+                android:layout_toRightOf="@+id/authorIcon" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/discription"
+                android:layout_below="@id/authorName"
+                android:layout_alignParentRight="true"
+                android:paddingBottom="8dp"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:textSize="12sp"
+                android:textColor="#bbbbbb"
+                android:layout_toRightOf="@+id/authorIcon"
+                android:text="TextView"/>
+
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/averageRating"
+                style = "?android:attr/ratingBarStyleSmall"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
     </LinearLayout>
 
     <ListView
@@ -43,5 +95,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/listView"
         android:layout_gravity="bottom"
-        android:layout_weight=".9"/>
+        android:dividerHeight="0dp"
+        />
 </LinearLayout>

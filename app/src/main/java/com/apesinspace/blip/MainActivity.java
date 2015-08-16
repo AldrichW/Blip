@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 
 
 import com.squareup.okhttp.Call;
@@ -21,6 +23,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
     protected ListView mUserListView;
     protected List<User> mUsers;
     protected ImageView mRouteImageView;
+    protected ImageView mAuthorImageView;
+    protected TextView mAuthorName;
+    protected TextView mDiscription;
+    protected RatingBar mAvrageRating;
+
     private ShareActionProvider mShareActionProvider;
     protected Intent mShareIntent;
     protected Routes mRoutes;
@@ -48,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mUserListView = (ListView) findViewById(R.id.listView);
         mRouteImageView = (ImageView) findViewById(R.id.imageView);
+        mAuthorImageView = (ImageView)findViewById(R.id.authorIcon);
+        mAuthorName = (TextView)findViewById(R.id.authorName);
+        mDiscription = (TextView)findViewById(R.id.discription);
+        mAvrageRating = (RatingBar)findViewById(R.id.averageRating);
+
         mUsers = new ArrayList<>();
         mShareIntent = new Intent();
         mShareIntent.setAction(Intent.ACTION_SEND);
@@ -106,15 +119,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleResponse(JSONObject jsonResponse) {
+        mRoutes = new Routes();
+
         try{
-            mRoutes.setId(jsonResponse.getString("id"));
-            mRoutes.setName(jsonResponse.getString("name"));
-            mRoutes.setAvgRating(jsonResponse.getInt("star_rating"));
-            JSONObject creator = jsonResponse.getJSONObject("original_driver");
+            JSONObject object = jsonResponse.getJSONObject("routeData");
+            mRoutes.setId(object.getString("id"));
+            mRoutes.setName(object.getString("name"));
+            mRoutes.setAvgRating(object.getInt("star_rating"));
+            mRoutes.setDiscription(object.getString("description"));
+            JSONObject creator = object.getJSONObject("original_driver");
             mRoutes.setAuthor(creator.getString("username"));
+            mRoutes.setAuthorImage(creator.getString("profile_pic"));
+
+
         }catch (JSONException e){
 
         }
+        mAvrageRating.setNumStars(mRoutes.getAvgRating());
+        mAuthorName.setText(mRoutes.getAuthor());
+        mDiscription.setText(mRoutes.getDiscription());
+        Picasso.with(MainActivity.this).load(mRoutes.getAuthorImage()).into(mAuthorImageView);
+
     }
 
     private void getUsersReviews() {

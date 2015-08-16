@@ -14,6 +14,25 @@ public class Routes {
     private String mAuthor;
     private int mAvgRating;
     private ArrayList<User> mUsers;
+    private String mDiscription;
+    private String mAuthorImage;
+
+
+    public String getDiscription() {
+        return mDiscription;
+    }
+
+    public void setDiscription(String discription) {
+        mDiscription = discription;
+    }
+
+    public String getAuthorImage(){
+        return mAuthorImage;
+    }
+
+    public void setAuthorImage(String url){
+        mAuthorImage = url;
+    }
 
     public ArrayList<User> getUsers() {
         return mUsers;

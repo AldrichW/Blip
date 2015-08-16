@@ -1,5 +1,7 @@
 package com.apesinspace.blip;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by aldrichW on 15-08-15.
  */
@@ -12,7 +14,7 @@ public class MarkerInfo {
         return infoTitle;
     }
 
-    public String getImagePath() {
+    public String getImage(){
         return imagePath;
     }
 

@@ -97,6 +97,8 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
 
                 NewMarkerDialogFragment newDialog = new NewMarkerDialogFragment();
+                newDialog.setMarker(marker);
+                newDialog.setGoogleMap(googleMap);
                 newDialog.show(getFragmentManager(), "new_marker");
             }
         });

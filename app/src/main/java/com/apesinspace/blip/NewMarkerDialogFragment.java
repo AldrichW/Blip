@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -23,9 +24,19 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -41,6 +52,8 @@ public class NewMarkerDialogFragment extends DialogFragment {
     String imagePathString;
     View view;
 
+    ArrayList<MarkerPoint> markerPointList;
+
     HashMap<Marker, MarkerInfo> markerMap;
     public static final int RESULT_LOAD_IMAGE = 3;
     public static final int RESULT_OK = -1;
@@ -53,6 +66,7 @@ public class NewMarkerDialogFragment extends DialogFragment {
         final LayoutInflater inflater = getActivity().getLayoutInflater();
 
         markerMap = new HashMap<Marker, MarkerInfo>();
+        markerPointList = new ArrayList<MarkerPoint>();
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
@@ -105,15 +119,13 @@ public class NewMarkerDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 Marker newMarker = marker;
                 MarkerInfo info = new MarkerInfo();
-                if(markerTypeSpinner.getSelectedItemPosition() == 0){
+                if (markerTypeSpinner.getSelectedItemPosition() == 0) {
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
                     info.setInfoTitle("Scenic Viewpoint");
-                }
-                else if(markerTypeSpinner.getSelectedItemPosition() == 1){
+                } else if (markerTypeSpinner.getSelectedItemPosition() == 1) {
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                     info.setInfoTitle("Caution Point");
-                }
-                else{
+                } else {
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
                     info.setInfoTitle("Points of Interest");
                 }
@@ -122,6 +134,16 @@ public class NewMarkerDialogFragment extends DialogFragment {
                 info.setImagePath(imagePathString);
 
                 markerMap.put(newMarker, info);
+
+                MarkerPoint newMarkerPoint = new MarkerPoint();
+                newMarkerPoint.setMarkerPoint(newMarker.getPosition());
+                newMarkerPoint.setMarkerUserDescription(info.getInfoText());
+
+                RouteFragmentActivity.MarkerType type = RouteFragmentActivity.MarkerType.values()[markerTypeSpinner.getSelectedItemPosition()];
+                newMarkerPoint.setMarkerType(type);
+                newMarkerPoint.setImagePath(info.getImage());
+
+                markerPointList.add(newMarkerPoint);
             }
         });
         // Create the AlertDialog object and return it
@@ -153,11 +175,68 @@ public class NewMarkerDialogFragment extends DialogFragment {
 
     }
 
+    public void saveCustomMarkerPoints() {
+        // create new user
+//        try {
+//            saveImageToServer();
+//
+//            OkHttpClient client = new OkHttpClient();
+//            JSONObject poi = new JSONObject();
+//            JSONObject geopoint = new JSONObject();
+//            poi.put("description", );
+//            poi.put("type", password);
+//            poi.put("geopoint", email);
+//            RequestBody body = RequestBody.create(JSON,newUser.toString());
+//            Log.d(TAG, newUser.toString());
+//            Request request = new Request.Builder()
+//                    .url("http://node.jrdbnntt.com/routes/save_route")
+//                    .post(body)
+//                    .build();
+//            Call call = client.newCall(request);
+//            call.enqueue(new Callback() {
+//                @Override
+//                public void onFailure(Request request, IOException e) {
+//                    Log.e(TAG, e.getMessage());
+//                    //Todo:Create alert dialog that notifies user what happend
+//                }
+//
+//                @Override
+//                public void onResponse(Response response) throws IOException {
+//                    try {
+//                        //Todo: check to see if authenticated if so start next activity else show error
+//                        if (response.isSuccessful()) {
+//                            //process response
+//                            final JSONObject jsonResponse = new JSONObject(response.body().string());
+//                            Log.d(TAG, jsonResponse.toString());
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    handleResponse(jsonResponse);
+//                                }
+//                            });
+//                        } else {
+//                            // TODO: Show response error to user
+//                        }
+//                    } catch (Exception e) {
+//                        //TODO: Show error to user
+//                        Log.e("TAG", e.getMessage());
+//                    }
+//                }
+//            });
+//        }catch (JSONException e){
+//            Log.e(TAG,e.getMessage());
+//        }
+    }
+
     public void setMarker(Marker _marker){
         marker = _marker;
     }
 
     public void setGoogleMap(GoogleMap _googleMap){
         googleMap = _googleMap;
+    }
+
+    public void saveImageToServer() {
+
     }
 }

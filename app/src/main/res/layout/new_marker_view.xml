@@ -5,35 +5,36 @@
 
     <Spinner
         android:id="@+id/marker_type_spinner"
-        android:layout_width="500dp"
+        android:layout_width="200dp"
         android:layout_height="40dp"
-        android:drawSelectorOnTop="true"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/abc_secondary_text_material_light"
         android:entries="@array/spinnerItems"/>
 
     <ImageView
         android:id="@+id/imgView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        />
 
 
 
     <Button
         android:id="@+id/upload_button"
-        android:layout_width="500dp"
+        android:layout_width="200dp"
         android:layout_height="50dp"
         android:text="Upload Photo"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:background="@color/material_blue_grey_900"
+        android:textColor="@color/abc_primary_text_material_dark"/>
 
     <EditText
         android:id="@+id/marker_description"
-        android:layout_width="500dp"
-        android:layout_height="60dp"
+        android:layout_width="250dp"
+        android:layout_gravity="center"
+        android:layout_height="70dp"
         android:inputType="textMultiLine"/>
-
-
-
-
 
 
 </LinearLayout>

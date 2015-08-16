@@ -11,8 +11,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RatingBar;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -48,8 +52,10 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
 
     GoogleMap googleMap;
     HashMap<Marker, MarkerInfo> markerMap;
+    ArrayList<MarkerPoint> pointList;
     RatingBar ratingBar;
     EditText editableText;
+    Button saveRouteButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,11 +65,24 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
         setContentView(R.layout.activity_post_adventure_fragment);
 
         markerMap = new HashMap<Marker, MarkerInfo>();
-
+        pointList = new ArrayList<MarkerPoint>();
         RatingDialogFragment dialog = new RatingDialogFragment();
         String tag = "strings";
         ratingBar = (RatingBar)findViewById(R.id.ratingBar);
         editableText = (EditText)findViewById(R.id.editText);
+
+        saveRouteButton = (Button)findViewById(R.id.save_route);
+        saveRouteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Context context = getApplicationContext();
+                CharSequence text = "Route Successfully Saved!";
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
+        });
 
         dialog.show(getFragmentManager(), tag);
 
@@ -75,7 +94,6 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
     public void onMapReady(GoogleMap map){
         googleMap = map;
         map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-
 
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -221,6 +239,10 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
         downloadHandler.execute(urlString);
     }
 
+    public void savePointsofInterest(ArrayList<MarkerPoint> pointsOfInterest){
+
+    }
+
     public class DownloadHandler extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urlString){
@@ -289,8 +311,9 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
             }
 
         }
-
     }
+
+
     /** A class to parse the Google Places in JSON format */
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
 

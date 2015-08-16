@@ -83,6 +83,10 @@ public class PostAdventureFragmentActivity extends FragmentActivity implements O
                 toast.show();
 
                 //Post to twitter
+
+                TwitterDialogFragment newDialog = new TwitterDialogFragment();
+                newDialog.show(getFragmentManager(), "twitter");
+
             }
         });
 

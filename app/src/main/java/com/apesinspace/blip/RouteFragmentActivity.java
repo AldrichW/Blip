@@ -96,7 +96,7 @@ public class RouteFragmentActivity extends FragmentActivity implements OnMapRead
     public void onMapReady(GoogleMap map){
         googleMap = map;
         map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-
+        map.setMyLocationEnabled(true);
 
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();

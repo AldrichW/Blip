@@ -16,7 +16,7 @@
         android:id="@+id/edittextlayout"
         style="@style/AuthFieldContainer">
         <EditText
-            android:id="@+id/emailField"
+            android:id="@+id/usernameField"
             android:hint="username"
             style="@style/AuthEditText"/>
         <requestFocus/>

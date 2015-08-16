@@ -7,6 +7,22 @@ import org.json.JSONObject;
  * Created by samnwosu on 8/14/15.
  */
 public class User {
+    // this constructor is used for testing
+    public User(String name, String review) {
+        mName = name;
+        mReview = review;
+    }
+
+    public User() {
+        mName = "";
+        mBikeModel = "";
+        mReview = "";
+        mRating = 0;
+        mImageUrl = "";
+        mId = "";
+
+    }
+
     public String getName() {
         return mName;
     }
@@ -39,6 +55,14 @@ public class User {
         mRating = rating;
     }
 
+    public String getId(){
+        return mId;
+    }
+
+    public void setId(String id){
+        mId = id;
+    }
+
     public String getImageUrl() {
         return mImageUrl;
     }
@@ -52,18 +76,9 @@ public class User {
     private String mReview;
     private int mRating;
     private String mImageUrl;
+    private String mId;
 
-    public User(String name, String review) {
-        mName = name;
-        mReview = review;
-    }
 
-    public User(JSONObject object)throws JSONException{
-        mName = object.getString("Name");
-        mBikeModel = object.getString("mBikeModel");
-        mReview = object.getString("Review");
-        mRating = object.getInt("Rating");
-    }
 
 
 

@@ -2,6 +2,7 @@ package com.apesinspace.blip;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +28,7 @@ import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity {
     public static String TAG = LoginActivity.class.getSimpleName();
+    public static final String MY_PREFS_NAME = "MyPrefsFile";
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
@@ -130,12 +132,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleResponse(JSONObject jsonResponse){
-        if(jsonResponse == null || !jsonResponse.isNull("error")){
+        if(jsonResponse == null || !jsonResponse.isNull("err")){
             AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
             String error = "Unknwon error";
             try {
-                if (!jsonResponse.isNull("error"))
-                    error = jsonResponse.getString("error");
+                if (!jsonResponse.isNull("err"))
+                    error = jsonResponse.getString("err");
             }catch (JSONException e){
             }
             builder.setMessage(error);
@@ -144,6 +146,20 @@ public class LoginActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }else{
+
+            User user = new User();
+            try {
+                user.setId(jsonResponse.getString("id"));
+                user.setName(jsonResponse.getString("name"));
+                user.setImageUrl(jsonResponse.getString("profile_pic"));
+            }catch (JSONException e){
+            }
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME,MODE_PRIVATE).edit();
+            editor.putString("USER",user.getName());
+            editor.putString("ID", user.getId());
+            editor.putString("PIC", user.getImageUrl());
+            editor.apply();
+            BlipApplication.setCurrentUser(user);
             BlipApplication.setIsLoggedIn(true);
             Intent intent = new Intent(LoginActivity.this,ListRoutes.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
